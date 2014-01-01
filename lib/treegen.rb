@@ -76,6 +76,10 @@ module TreeGen
 
   class TreeNode < Struct.new(:name, :value, :children)
     
+    ##
+    # One half of the mutually recursive pair of methods for generating trees
+    # from node descriptions. The other half lives in +Node+.
+
     def expand(tree_spec, current_depth, max_depth)
       if current_depth < max_depth
         children.map! {|c| c.expand(tree_spec, current_depth + 1, max_depth)}
@@ -88,19 +92,31 @@ module TreeGen
   end
 
   ##
-  # Classes that describe the nodes.
+  # This class is meant to describe the actual arguments of a function when
+  # the functions and their compositions are represented as trees.
 
   class ArgumentNode < Struct.new(:name, :callable)
+
+    ##
+    # Expanding an argument node is very simple. We just call the block
+    # of code that was used during the defintion of the argument.
 
     def expand(tree_spec, current_depth, max_depth)
       TreeNode.new(name, callable.call, [])
     end
+
+    ##
+    # Terminating is just as simple as expanding. We just call the block
+    # to get a final value to be placed in the tree.
 
     def terminate
       TreeNode.new(name, callable.call, [])
     end
 
   end
+
+  ##
+  # You should think of these as both terminal and non-terminal nodes in the tree.
 
   class Node < Struct.new(:name, :argument_specifications)
 
@@ -131,6 +147,10 @@ module TreeGen
       argument_specifications.each {|arg_spec| arg_spec.validate(tree_spec)}
     end
 
+    ##
+    # The other half of the mutually recursive pair of methods that are used to
+    # construct the tree. The first half you saw in +TreeNode+.
+
     def expand(tree_spec, current_depth, max_depth)
       children = argument_specifications.map {|spec| spec.expand(tree_spec)}
       tree_node = TreeNode.new(name, nil, children)
@@ -139,6 +159,11 @@ module TreeGen
       end
       tree_node
     end
+
+    ##
+    # This is not the correct way to terminate nodes but in the absence of more
+    # information the best we can do is simply truncate things and let the consumer
+    # of the tree deal with incomplete nodes.
 
     def terminate
       TreeNode.new(name, nil, [])
@@ -156,6 +181,9 @@ module TreeGen
 
     def |(other); ArgumentSpecificationChoice.new(self, other); end
 
+    ##
+    # Make sure the specification has definitions for this argument.
+
     def validate(tree_spec)
       case type
       when :callable
@@ -169,6 +197,11 @@ module TreeGen
       end
     end
 
+    ##
+    # Used during expansion to turn arguments back to +Node+ and +ArgumentNode+
+    # instances so that the mutually recursive pair of functions between +TreeNode+
+    # and +Node+ can continue expanding the tree.
+
     def nodify(tree_spec)
       case type
       when :callable
@@ -177,6 +210,11 @@ module TreeGen
         tree_spec.nodes[name]
       end
     end
+
+    ##
+    # Create new +TreeNode+ instances based on argument type. For callables we just
+    # fill in the value and for non-callable nodes we simply convert it to a +TreeNode+
+    # instance and await further calls from the mutually recursive functions.
 
     def expand(tree_spec)
       case type
@@ -192,7 +230,9 @@ module TreeGen
 
   ##
   # When there are several choices for an argument then we create an instance
-  # of this class to collect all the choices into one place.
+  # of this class to collect all the choices into one place. Pretty much the same
+  # logic as for +ArgumentSpecification+ except when it comes to choices we just
+  # choose randomly from the argument types.
 
   class ArgumentSpecificationChoice
 
