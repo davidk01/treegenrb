@@ -25,5 +25,6 @@ mondrian_trees = TreeGen::configure do
 
 end
 
+# +generate_tree+ takes a depth parameter and terminates all nodes
+# at that depth
 tree = mondrian_trees.generate_tree(3)
-require 'pry'; binding.pry
