@@ -7,7 +7,7 @@ based on that description.
 
 Add this line to your application's Gemfile:
 
-    gem 'treegen', :git => 'git://github.com/davidk01/treegen.git', :branch => 'master'
+    gem 'treegen', :git => 'git://github.com/davidk01/treegenrb.git', :branch => 'master'
 
 And then execute:
 
@@ -15,7 +15,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ git clone git://github.com/davidk01/treegen.git
+    $ git clone git://github.com/davidk01/treegenrb.git
     $ cd treegen && rake install
 
 ## Usage
