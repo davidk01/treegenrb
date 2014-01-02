@@ -78,13 +78,15 @@ module TreeGen
     
     ##
     # One half of the mutually recursive pair of methods for generating trees
-    # from node descriptions. The other half lives in +Node+.
+    # from node descriptions. The other half lives in +Node+. IMPORTANT: All the immediate
+    # children are +TreeNode+ instances but the childrens' children are +Node+ or +ArgumentNode+
+    # instances.
 
     def expand(tree_spec, current_depth, max_depth)
       if current_depth < max_depth
         children.map! {|c| c.expand(tree_spec, current_depth + 1, max_depth)}
       else
-        children.map! {|c| c.terminate}
+        children.each {|c| c.children.map!(&:terminate)}
       end
       self
     end
@@ -149,13 +151,18 @@ module TreeGen
 
     ##
     # The other half of the mutually recursive pair of methods that are used to
-    # construct the tree. The first half you saw in +TreeNode+.
+    # construct the tree. The first half you saw in +TreeNode+. IMPORTANT: The
+    # children are +TreeNode+ instances but the children of the children are
+    # +Node+ and +ArgumentNode+ instances so need to be careful with termination.
 
     def expand(tree_spec, current_depth, max_depth)
       children = argument_specifications.map {|spec| spec.expand(tree_spec)}
-      tree_node = TreeNode.new(name, nil, children)
       if current_depth < max_depth
+        tree_node = TreeNode.new(name, nil, children)
         tree_node.expand(tree_spec, current_depth + 1, max_depth)
+      else
+        children.each {|c| c.children.map!(&:terminate)}
+        tree_node = TreeNode.new(name, nil, children)
       end
       tree_node
     end

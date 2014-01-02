@@ -73,9 +73,38 @@ module RaphaelMondrian
     [t, u]
   end
 
+  ##
+  # We need to now extract the two seperated boundary components. It is easier to
+  # draw it than to explain it but not gonna do it here. If you've ever seen the usual
+  # trick in complex analysis of splitting a square into multiple parts and then going
+  # forward and then backward over a commmon boundary component then you should be good
+  # to go. If not I highly recommend you open up a complex analysis book at your local
+  # library.
+
+  def self.split_annotated_boundary(boundary)
+    indices = []
+    boundary.each_with_index do |point, index|
+      if point[:split]
+        indices << index
+      end
+    end
+    first_component = boundary[indices[0]..indices[1]].map {|x| x[:point]}
+    second_component = (boundary[indices[1]..-1] +
+     boundary[0..indices[0]]).map {|x| x[:point]}
+    [first_component, second_component]
+  end
+
+  ##
+  # Traverse from the top level by splitting each boundary into two components when
+  # we have a splitting node and then aggregate the results together annotated with
+  # each boundary component's color.
+
   def self.generate_aux(node, boundary)
     case node.name
     when :split
+      if node.children.empty?
+        return [{:boundary => boundary, :color => :no_color}]
+      end
       centroid = boundary.reduce(:+) * (1.0 / boundary.length)
       point_pairs = boundary.zip(boundary.lazy.cycle.drop(1))
       boundary_vectors = point_pairs.map {|first, second| second - first}
@@ -88,8 +117,14 @@ module RaphaelMondrian
           [{:point => point}, {:point => point + vector * t, :split => true}] :
           [{:point => point}]
       end
-      require 'pry'; binding.pry
+      first_component, second_component = split_annotated_boundary(annotated_boundary)
+      generate_aux(node.children[1], first_component) +
+       generate_aux(node.children[2], second_component)
     when :square
+      if node.children.empty?
+        return [{:boundary => boundary, :color => :no_color}]
+      end
+      [{:boundary => boundary, :color => node.children[0].value}]
     end
   end
 
