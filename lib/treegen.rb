@@ -86,7 +86,7 @@ module TreeGen
       if current_depth < max_depth
         children.map! {|c| c.expand(tree_spec, current_depth + 1, max_depth)}
       else
-        children.each {|c| c.children.map!(&:terminate)}
+        children.map!(&:terminate)
       end
       self
     end
@@ -157,13 +157,8 @@ module TreeGen
 
     def expand(tree_spec, current_depth, max_depth)
       children = argument_specifications.map {|spec| spec.expand(tree_spec)}
-      if current_depth < max_depth
-        tree_node = TreeNode.new(name, nil, children)
-        tree_node.expand(tree_spec, current_depth + 1, max_depth)
-      else
-        children.each {|c| c.children.map!(&:terminate)}
-        tree_node = TreeNode.new(name, nil, children)
-      end
+      tree_node = TreeNode.new(name, nil, children)
+      tree_node.expand(tree_spec, current_depth + 1, max_depth)
       tree_node
     end
 

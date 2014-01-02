@@ -26,8 +26,9 @@ mondrian_trees = TreeGen::configure do
 end
 
 # +generate_tree+ takes a depth parameter and terminates all nodes
-# at that depth
-tree = mondrian_trees.generate_tree(3)
+# at that depth no matter how incomplete the nodes are. this forces
+# some gross hacks in the tree walking code.
+
 
 module RaphaelMondrian
 
@@ -129,10 +130,22 @@ module RaphaelMondrian
   end
 
   def self.generate(node)
-    generate_aux(node, [Point.new(-1, -1), Point.new(1, -1),
+    boundaries_with_colors = generate_aux(node, [Point.new(-1, -1), Point.new(1, -1),
      Point.new(1, 1), Point.new(-1, 1)])
+    lines = boundaries_with_colors.map do |data|
+      boundary = data[:boundary].map {|x| x * 300 + Point.new(300, 300)}
+      "var path = paper.path('M#{boundary[0].x},#{boundary[0].y}" +
+       boundary[1..-1].map {|b| "L#{b.x},#{b.y}"}.join + "Z');\n" +
+       "path.attr({fill: '#{data[:color]}'});"
+    end.join("\n")
+    script = [
+     "var paper = Raphael(document.getElementById('canvas_container'), 600, 600);",
+     lines].join("\n")
+    html = open('test.html', 'r') {|f| f.read.sub('#raphael', script)}
+    open('index.html', 'w') {|f| f.puts html}
   end
 
 end
 
-require 'pry'; binding.pry
+tree = mondrian_trees.generate_tree(5)
+RaphaelMondrian.generate(tree)
