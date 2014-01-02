@@ -1,32 +1,18 @@
 <html>  
-    <head>  
-        <title>Raphael Play</title>  
-        <script type="text/javascript" src="raphael-min.js"></script>
-        <style type="text/css">  
-            #canvas_container {  
-                width: 500px;  
-                border: 1px solid #aaa;  
-            }  
-        </style>  
-    </head>  
-    <body>  
-        <div id="canvas_container"></div>  
+<head>  
+<title>Raphael Play</title>  
+<script type="text/javascript" src="raphael-min.js"></script>
+</head>  
+<body>  
+<div id="canvas_container"></div>
 <script type="text/javascript">
-var paper = Raphael(document.getElementById('canvas_container'), 600, 600);
-var path = paper.path('M305.5900484022602,600.0L45.659378151195654,600.0L129.32654815760182,501.3128503835973L386.0632808939357,340.13828738695554Z');
-path.attr({fill: 'black'});
-var path = paper.path('M386.0632808939357,340.13828738695554L600.0,205.83277978252931L600,600L305.5900484022602,600.0Z');
-path.attr({fill: 'black'});
-var path = paper.path('M493.01022130655855,72.34047014955911L554.3406218488044,0.0L600,0L600.0,70.84386068973183L511.06499691373494,143.8355449980761Z');
-path.attr({fill: 'no_color'});
-var path = paper.path('M511.06499691373494,143.8355449980761L252.442754403752,356.0947503201266L493.01022130655855,72.34047014955911Z');
-path.attr({fill: 'no_color'});
-var path = paper.path('M600.0,70.84386068973183L600.0,205.83277978252931L129.32654815760182,501.3128503835973L252.442754403752,356.0947503201266Z');
-path.attr({fill: 'blue'});
-var path = paper.path('M68.59958776763864,0.0L554.3406218488044,0.0L186.36749933850032,434.031874069707Z');
-path.attr({fill: 'blue'});
-var path = paper.path('M186.36749933850032,434.031874069707L45.659378151195654,600.0L0,600L0,0L68.59958776763864,0.0Z');
-path.attr({fill: 'black'});
+var paper = Raphael(document.getElementById('canvas_container'), 1200, 900);
+var path = paper.path('M854.6612063858465,0.0L1200,0L1200,900L345.3387936141535,900.0Z');
+path.attr({fill: '#35D3A7'});
+var path = paper.path('M0.0,698.4216995090992L0,0L843.4307883199039,0.0Z');
+path.attr({fill: '#0A67A3'});
+var path = paper.path('M843.4307883199039,0.0L854.6612063858465,0.0L345.3387936141535,900.0L0,900L0.0,698.4216995090992Z');
+path.attr({fill: '#FF9C00'});
 </script>
-    </body>  
+</body>  
 </html>

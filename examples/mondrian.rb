@@ -19,7 +19,8 @@ mondrian_trees = TreeGen::configure do
   end
 
   argument(:color) do
-    colors = [:white, :black, :red, :yellow, :green, :blue]
+    colors = ['#9B6AD6', '#B7F46E', '#006D4F', '#35D3A7', '#FF9C00',
+     '#03426A', '#0A67A3', '#FF9200', '#009999']
     colors[rand(colors.length)]
   end
 
@@ -129,17 +130,17 @@ module RaphaelMondrian
     end
   end
 
-  def self.generate(node)
-    boundaries_with_colors = generate_aux(node, [Point.new(-1, -1), Point.new(1, -1),
-     Point.new(1, 1), Point.new(-1, 1)])
+  def self.generate(node, width, height)
+    boundaries_with_colors = generate_aux(node, [Point.new(0, 0), Point.new(width, 0),
+     Point.new(width, height), Point.new(0, height)])
     lines = boundaries_with_colors.map do |data|
-      boundary = data[:boundary].map {|x| x * 300 + Point.new(300, 300)}
+      boundary = data[:boundary]
       "var path = paper.path('M#{boundary[0].x},#{boundary[0].y}" +
        boundary[1..-1].map {|b| "L#{b.x},#{b.y}"}.join + "Z');\n" +
        "path.attr({fill: '#{data[:color]}'});"
     end.join("\n")
     script = [
-     "var paper = Raphael(document.getElementById('canvas_container'), 600, 600);",
+     "var paper = Raphael(document.getElementById('canvas_container'), #{width}, #{height});",
      lines].join("\n")
     html = open('test.html', 'r') {|f| f.read.sub('#raphael', script)}
     open('index.html', 'w') {|f| f.puts html}
@@ -148,4 +149,4 @@ module RaphaelMondrian
 end
 
 tree = mondrian_trees.generate_tree(5)
-RaphaelMondrian.generate(tree)
+RaphaelMondrian.generate(tree, 1200, 900)
