@@ -45,7 +45,6 @@ module RaphaelMondrian
     def -(other); Point.new(self.x - other.x, self.y - other.y); end
     def -@; Point.new(-self.x, -self.y); end
     def *(scalar); Point.new(self.x * scalar, self.y * scalar); end
-    def norm; Math.sqrt(self.x * self.x + self.y * self.y); end
     def self.from_angle(angle); Point.new(Math.cos(angle), Math.sin(angle)); end
     def dot(other); self.x * other.x + self.y * other.y; end
   end
